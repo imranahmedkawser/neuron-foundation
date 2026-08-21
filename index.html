@@ -164,6 +164,7 @@
  }
 
  function loadPending(){
+ const pendingList = document.getElementById('pendingList'); // ei line add koro
  onValue(ref(db, 'members'), (snapshot) => {
  pendingList.innerHTML = "";
  snapshot.forEach((childSnap) => {
@@ -177,7 +178,7 @@
  })
  if(pendingList.innerHTML == "") pendingList.innerHTML = "No Pending Members"
  })
-  }
+ }
  window.showAdmin = function(){
  document.getElementById('regForm').style.display = "none";
  document.getElementById('memberPanel').style.display = "none";
