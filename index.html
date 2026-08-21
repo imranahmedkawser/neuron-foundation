@@ -211,24 +211,6 @@
 
  Ei js code dewar por ki ami onno page er link diye onno doner list add korte parbo...?
 
-  function loadDonors(){
- const donorList = document.getElementById('donorList');
- onValue(ref(db, 'members'), (snapshot) => {
- donorList.innerHTML = "";
- snapshot.forEach((childSnap) => {
- let data = childSnap.val();
- if(data.status == "Approved"){  // ei line ta must
- donorList.innerHTML += `
- <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
- <h4>${data.name} - ${data.blood}</h4>
- <p><b>Phone:</b> <a href="tel:${data.phone}">${data.phone}</a></p>
- </div>
- `
- }
- })
- if(donorList.innerHTML == "") donorList.innerHTML = "Ekhono kono Approved Donor nei"
- })
-}
   
 </script>
 </body>
