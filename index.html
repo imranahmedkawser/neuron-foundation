@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Neuron Blood Foundation</title>
+ <style>
+ body{font-family:Arial; margin:0; background:#111; color:white;}
+ header{background:#c70000; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;}
+ nav a{color:white; margin:0 10px; text-decoration:none; font-weight:bold;}
+ .btn{background:#c70000; color:white; padding:10px 18px; border-radius:5px; border:none; cursor:pointer; font-weight:bold;}
+ .container{padding:40px; max-width:1200px; margin:auto; display:flex; gap:30px; flex-wrap:wrap;}
+ .left{flex:1; min-width:300px;} 
+ .right{background:white; color:#333; padding:25px; border-radius:10px; width:350px;}
+ input,select{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;}
+ #memberPanel, #adminPanel{display:none;} 
+ h1 span{color:#c70000;}
+ </style>
+</head>
+<body>
+
+<header>
+ <b style="font-size:18px;">Neuron Blood Foundation</b>
+ <nav>
+ <a href="#">Home</a>
+ <a href="#">Donate Blood</a>
+ <button class="btn" onclick="showLogin()">Member Login</button>
+ <button class="btn" onclick="showAdmin()">Admin</button>
+ </nav>
+</header>
+
+<div class="container">
+ <div class="left">
+ <h1><span>Neuron</span> Blood Foundation</h1>
+ <p>With youth; on the path of humanity</p>
+ </div>
+
+ <div class="right">
+ <!-- 1. Registration Form -->
+ <div id="regForm">
+ <h3 style="color:#c70000;">❤️ Blood Donor Registration</h3>
+ <input id="name" placeholder="Full Name *" required>
+ <input id="phone" placeholder="Phone Number *" required>
+ <input id="email" placeholder="Email Address">
+ <select id="blood"><option>Select blood group</option><option>A+</option><option>B+</option><option>O+</option><option>AB+</option><option>A-</option><option>B-</option><option>O-</option><option>AB-</option></select>
+ <input id="age" placeholder="Age *" type="number">
+ <button class="btn" style="width:100%" onclick="register()">Register as Blood Donor</button>
+ </div>
+
+ <!-- 2. Member Dashboard -->
+ <div id="memberPanel">
+ <h3>Welcome, <span id="mName"></span></h3>
+ <p><b>Phone:</b> <span id="mPhone"></span></p>
+ <p><b>Blood:</b> <span id="mBlood"></span></p>
+ <h4>My Activities:</h4>
+ <ul><li>Status: <span id="mStatus"></span></li></ul>
+ <button class="btn" onclick="logout()">Logout</button>
+ </div>
+
+ <!-- 3. Admin Panel -->
+ <div id="adminPanel">
+ <h3>Admin Panel</h3>
+ <p>Pending Members:</p>
+ <div id="pendingList">Loading...</div>
+ <button class="btn" onclick="logout()">Back</button>
+ </div>
+
+ </div>
+</div>
+
+<script type="module">
+ // 1. Tomar Firebase Config
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+ import { getDatabase, ref, push, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+ const firebaseConfig = {
+ apiKey: "AIzaSyDaiKUjDOcyK_BfpK76LzzXtpOgsRuQoPc",
+ authDomain: "neuron-foundation.firebaseapp.com",
+ databaseURL: "https://neuron-foundation-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId: "neuron-foundation",
+ storageBucket: "neuron-foundation.firebasestorage.app",
+ messagingSenderId: "451445636516",
+ appId: "1:451445636516:web:15004e1af05cced6385531",
+ measurementId: "G-RBFSKMQ904"
+ };
+
+ const app = initializeApp(firebaseConfig);
+ const db = getDatabase(app);
+
+ // 2. Register Function
+ window.register = function(){
+ if(!name.value || !phone.value){alert("Name + Phone Must"); return;}
+ push(ref(db, 'members'), {
+ name: name.value, phone: phone.value, email: email.value, 
+ blood: blood.value, age: age.value, status: "Pending", date: new Date().toLocaleString()
+ });
+ alert("Registration Successful! Admin Approval এর পর Login করতে পারবেন।");
+ document.getElementById('regForm').reset();
+ }
+
+ // 3. Member Login
+ window.showLogin = async function(){
+ let phoneNum = prompt("Login করতে Phone Number দিন:");
+ if(!phoneNum) return;
+ const dbRef = ref(db);
+ const snapshot = await get(child(dbRef, `members`));
+ let found = false;
+ snapshot.forEach((child) => {
+ if(child.val().phone == phoneNum && child.val().status == "Approved"){
+ found = true;
+ document.getElementById('mName').innerText = child.val().name;
+ document.getElementById('mPhone').innerText = child.val().phone;
+ document.getElementById('mBlood').innerText = child.val().blood;
+ document.getElementById('mStatus').innerText = child.val().status;
+ }
+ });
+ if(found){
+ document.getElementById('regForm').style.display = "none";
+ document.getElementById('memberPanel').style.display = "block";
+ document.getElementById('adminPanel').style.display = "none";
+ } else { alert("Approval Pending or Wrong Number"); }
+ }
+ 
+ // 4. Admin Panel
+ window.showAdmin = function(){
+ document.getElementById('regForm').style.display = "none";
+ document.getElementById('memberPanel').style.display = "none";
+ document.getElementById('adminPanel').style.display = "block";
+ 
+ onValue(ref(db, 'members'), (snapshot) => {
+ pendingList.innerHTML = "";
+ snapshot.forEach((childSnap) => {
+ if(childSnap.val().status == "Pending"){
+ pendingList.innerHTML += `
+ <p style="border-bottom:1px solid #ccc; padding:5px;">
+ ${childSnap.val().name} - ${childSnap.val().phone} - ${childSnap.val().blood}
+ <button class="btn" style="padding:5px 10px; font-size:12px;" onclick="approve('${childSnap.key}')">Approve</button></p>
+ `
+ }
+ })
+ if(pendingList.innerHTML == "") pendingList.innerHTML = "No Pending Members"
+ })
+ }
+
+ window.approve = function(id){
+ update(ref(db, 'members/' + id), {status: "Approved"});
+ alert("Approved!");
+ }
+
+ window.logout = function(){
+ document.getElementById('regForm').style.display = "block";
+ document.getElementById('memberPanel').style.display = "none";
+ document.getElementById('adminPanel').style.display = "none";
+ }
+
+</script>
+</body>
+</html>
