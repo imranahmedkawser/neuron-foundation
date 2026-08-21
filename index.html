@@ -58,6 +58,20 @@
  </div>
 
  <!-- 3. Admin Panel -->
+  
+  <!-- Admin Panel এর উপরে Password box add করো -->
+ <div id="adminPanel">
+ <h3>Admin Login</h3>
+ <input id="adminPass" placeholder="Admin Password" type="password">
+ <button class="btn" onclick="adminLogin()">Login</button>
+ 
+ <div id="adminContent" style="display:none;">
+ <h3>Pending Members:</h3>
+ <div id="pendingList">Loading...</div>
+ <button class="btn" onclick="logout()">Back</button>
+ </div>
+ </div>
+  
  <div id="adminPanel">
  <h3>Admin Panel</h3>
  <p>Pending Members:</p>
