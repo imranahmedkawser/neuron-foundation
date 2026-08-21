@@ -89,10 +89,17 @@
 
  // 2. Register Function
  window.register = function(){
- if(!name.value || !phone.value){alert("Name + Phone Must"); return;}
+ let name = document.getElementById('name').value;
+ let phone = document.getElementById('phone').value;
+ let email = document.getElementById('email').value;
+ let blood = document.getElementById('blood').value;
+ let age = document.getElementById('age').value;
+
+ if(!name || !phone){alert("Name + Phone Must"); return;}
+ 
  push(ref(db, 'members'), {
- name: name.value, phone: phone.value, email: email.value, 
- blood: blood.value, age: age.value, status: "Pending", date: new Date().toLocaleString()
+ name: name, phone: phone, email: email, 
+ blood: blood, age: age, status: "Pending", date: new Date().toLocaleString()
  });
  alert("Registration Successful! Admin Approval এর পর Login করতে পারবেন।");
  document.getElementById('regForm').reset();
