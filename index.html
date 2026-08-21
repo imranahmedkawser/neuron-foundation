@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+ <meta charset="UTF-8">
+ <title>Neuron Blood Foundation</title>
+ <style>
+ body{font-family:Arial; margin:0; background:#111; color:white;}
+ header{background:#c70000; padding:10px 20px; display:flex; justify-content:space-between; align-items:center;}
+ nav a{color:white; margin:0 10px; text-decoration:none;}
+ .btn{background:#c70000; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; border:none;}
+ .container{padding:40px; max-width:1200px; margin:auto; display:flex; gap:20px;}
+ .left{flex:1;} .right{background:white; color:#333; padding:20px; border-radius:10px; width:350px;}
+ input,select{width:100%; padding:8px; margin:5px 0; border:1px solid #ccc; border-radius:4px;}
+ #memberPanel{display:none;} /* Login এর পর Show হবে */
+ </style>
+</head>
+<body>
+
+<header>
+ <b>Neuron Blood Foundation</b>
+ <nav>
+ <a href="#">Home</a><a href="#">Donate Blood</a><a href="#">About Us</a>
+ <button class="btn" onclick="showLogin()">Login</button>
+ </nav>
+</header>
+
+<div class="container">
+ <div class="left">
+ <h1 style="color:#c70000;">Neuron <span style="color:white;">Blood Foundation</span></h1>
+ <p>With youth; on the path of humanity</p>
+ <p>Join us in our mission to create positive social change through community service...</p>
+ </div>
+
+ <div class="right">
+ <!-- 1. Guest দের জন্য Registration Form -->
+ <div id="regForm">
+ <h3 style="color:#c70000;">❤️ Blood Donor Registration</h3>
+ <input id="name" placeholder="Full Name *">
+ <input id="phone" placeholder="Phone Number *">
+ <input id="email" placeholder="Email Address">
+ <select id="blood"><option>Select blood group</option><option>A+</option><option>B+</option></select>
+ <input id="age" placeholder="Age *">
+ <button class="btn" style="width:100%" onclick="register()">Register as Blood Donor</button>
+ </div>
+
+ <!-- 2. Member Login করার পর Dashboard -->
+ <div id="memberPanel">
+ <h3>Welcome, <span id="mName"></span></h3>
+ <p><b>Phone:</b> <span id="mPhone"></span></p>
+ <p><b>Blood:</b> <span id="mBlood"></span></p>
+ <h4>My Activities:</h4>
+ <ul><li>Last Donation: 10-08-2026</li><li>Total Donation: 3 Times</li></ul>
+ <button class="btn" onclick="logout()">Logout</button>
+ </div>
+
+ </div>
+</div>
+
+<script type="module">
+ // Firebase Free Config - এখানে তোমার টা বসাতে হবে
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+ import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+ 
+ const app = initializeApp({ /* তোমার Firebase Config */ });
+ const db = getDatabase(app);
+
+ // Register Function
+ window.register = function(){
+ push(ref(db, 'members'), {
+ name: name.value, phone: phone.value, email: email.value, 
+ blood: blood.value, age: age.value, status: "Pending"
+ });
+ alert("Registration Successful! Admin Approval এর পর Login করতে পারবেন।");
+ }
+
+ // Login System - Phone Number দিয়ে
+ window.showLogin = function(){
+ let phone = prompt("Login করতে Phone Number দিন:");
+ // এখানে Firebase থেকে Check করে Member Panel Show করবে
+ document.getElementById('regForm').style.display = "none";
+ document.getElementById('memberPanel').style.display = "block";
+ document.getElementById('mName').innerText = "Karim"; // Firebase থেকে আসবে
+ }
+ 
+ window.logout = function(){
+ document.getElementById('regForm').style.display = "block";
+ document.getElementById('memberPanel').style.display = "none";
+ }
+
+</script>
+</body>
+</html>
