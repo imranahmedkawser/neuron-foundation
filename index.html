@@ -158,22 +158,27 @@ window.showAdmin = function(){
  document.getElementById('adminContent').style.display = "none";
 }
 
-window.adminLogin = function(){
+window.adminLogin = async function(){
  let pass = document.getElementById('adminPass').value;
  if(pass == ADMIN_PASSWORD){
  document.getElementById('adminContent').style.display = "block";
- loadPending();
+ await loadPending(); // await add korsi
  } else {
  alert("Wrong Password!");
  }
 }
 
-function loadPending(){
+// FIXED: get() diye load korbe tai Rules problem thakleo cholbe
+async function loadPending(){
  const pendingList = document.getElementById('pendingList');
- onValue(ref(db, 'members'), (snapshot) => {
+ pendingList.innerHTML = "Loading...";
+ try{
+ const snapshot = await get(ref(db, 'members'));
  pendingList.innerHTML = "";
+ let hasPending = false;
  snapshot.forEach((childSnap) => {
  if(childSnap.val().status == "Pending"){
+ hasPending = true;
  pendingList.innerHTML += `
  <div class="pending-card">
  <b>${childSnap.val().name}</b> - ${childSnap.val().phone} - ${childSnap.val().blood}<br>
@@ -182,13 +187,16 @@ function loadPending(){
  `
  }
  })
- if(pendingList.innerHTML == "") pendingList.innerHTML = "No Pending Members"
- })
+ if(!hasPending) pendingList.innerHTML = "No Pending Members"
+ }catch(e){
+ pendingList.innerHTML = "Error: Firebase Rules check koro. Read = true korte hobe";
+ }
 }
 
-window.approve = function(id){
- update(ref(db, 'members/' + id), {status: "Approved"});
+window.approve = async function(id){
+ await update(ref(db, 'members/' + id), {status: "Approved"});
  alert("Approved!");
+ loadPending(); // Approve korar por abar list refresh
 }
 
 // 5. Donor List
@@ -200,13 +208,17 @@ window.showDonors = function(){
  loadDonors();
 }
 
-function loadDonors(){
+async function loadDonors(){
  const donorList = document.getElementById('donorList');
- onValue(ref(db, 'members'), (snapshot) => {
+ donorList.innerHTML = "Loading Donors...";
+ try{
+ const snapshot = await get(ref(db, 'members'));
  donorList.innerHTML = "";
+ let hasDonor = false;
  snapshot.forEach((childSnap) => {
  let data = childSnap.val();
  if(data.status == "Approved"){
+ hasDonor = true;
  donorList.innerHTML += `
  <div class="donor-card">
  <h4>${data.name} - ${data.blood}</h4>
@@ -216,8 +228,10 @@ function loadDonors(){
  `
  }
  })
- if(donorList.innerHTML == "") donorList.innerHTML = "Ekhono kono Approved Donor nei"
- })
+ if(!hasDonor) donorList.innerHTML = "Ekhono kono Approved Donor nei"
+ }catch(e){
+ donorList.innerHTML = "Error: Firebase Rules check koro. Read = true korte hobe";
+ }
 }
 
 window.showHome = function(){
