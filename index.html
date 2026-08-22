@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Neuron Blood Foundation</title>
- <style>
- body{font-family:Arial; margin:0; background:#111; color:white;}
- header{background:#c70000; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;}
- nav a{color:white; margin:0 10px; text-decoration:none; font-weight:bold;}
- .btn{background:#c70000; color:white; padding:10px 18px; border-radius:5px; border:none; cursor:pointer; font-weight:bold;}
- .container{padding:40px; max-width:1200px; margin:auto; display:flex; gap:30px; flex-wrap:wrap;}
- .left{flex:1; min-width:300px;} 
- .right{background:white; color:#333; padding:25px; border-radius:10px; width:350px;}
- input,select{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;}
- #memberPanel, #adminPanel{display:none;} 
- h1 span{color:#c70000;}
- </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuron Blood Foundation</title>
+<style>
+body{font-family:Arial; margin:0; background:#f9f9f9;}
+header{background:#c70000; padding:15px 20px; color:white; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;}
+nav a{color:white; margin:0 10px; text-decoration:none;}
+nav button{margin-left:5px;}
+.btn{background:#c70000; color:white; border:none; padding:10px 20px; cursor:pointer; border-radius:5px; margin-top:10px;}
+.container{padding:40px; max-width:1200px; margin:auto; display:flex; gap:40px; flex-wrap:wrap;}
+.left{flex:1; min-width:300px;}
+.right{background:white; color:#333; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); flex:1; min-width:300px;}
+input,select{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;}
+#memberPanel, #adminPanel, #donorListPanel{display:none;}
+h1 span{color:#c70000;}
+.donor-card{border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:5px; background:#fff5f5;}
+.pending-card{border-bottom:1px solid #ccc; padding:10px 0;}
+</style>
 </head>
 <body>
 
 <header>
  <b style="font-size:18px;">Neuron Blood Foundation</b>
  <nav>
- <a href="#">Home</a>
- <a href="#">Donate Blood</a>
+ <a href="#" onclick="showHome()">Home</a>
+ <a href="#" onclick="showDonors()">Donate Blood</a>
  <button class="btn" onclick="showLogin()">Member Login</button>
  <button class="btn" onclick="showAdmin()">Admin</button>
  </nav>
@@ -36,15 +39,20 @@
  </div>
 
  <div class="right">
+ 
  <!-- 1. Registration Form -->
  <div id="regForm">
  <h3 style="color:#c70000;">❤️ Blood Donor Registration</h3>
  <input id="name" placeholder="Full Name *" required>
  <input id="phone" placeholder="Phone Number *" required>
  <input id="email" placeholder="Email Address">
- <select id="blood"><option>Select blood group</option><option>A+</option><option>B+</option><option>O+</option><option>AB+</option><option>A-</option><option>B-</option><option>O-</option><option>AB-</option></select>
+ <select id="blood">
+ <option>Select blood group</option>
+ <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+ <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+ </select>
  <input id="age" placeholder="Age *" type="number">
- <button class="btn" style="width:100%" onclick="register()">Register as Blood Donor</button>
+ <button class="btn" style="width:100%" onclick="register()">Register</button>
  </div>
 
  <!-- 2. Member Dashboard -->
@@ -57,64 +65,69 @@
  <button class="btn" onclick="logout()">Logout</button>
  </div>
 
-  <!-- 4. Donor List Panel -->
-<div id="donorListPanel" style="display:none;">
- <h3 style="color:#c70000;">🩸 Available Donors</h3>
- <div id="donorList">Loading Donors...</div>
- <button class="btn" onclick="showHome()">Back to Home</button>
-</div>
-  
  <!-- 3. Admin Panel -->
-  
  <div id="adminPanel">
  <h3>Admin Login</h3>
  <input id="adminPass" placeholder="Admin Password" type="password">
  <button class="btn" onclick="adminLogin()">Login</button>
 
+ <div id="adminContent" style="display:none;">
+ <h3>Pending Members:</h3>
+ <div id="pendingList">Loading...</div>
+ <button class="btn" onclick="logout()">Back</button>
+ </div>
+ </div>
+
+ <!-- 4. Donor List Panel -->
+ <div id="donorListPanel">
+ <h3 style="color:#c70000;">🩸 Available Donors</h3>
+ <div id="donorList">Loading Donors...</div>
+ <button class="btn" onclick="showHome()">Back</button>
+ </div>
 
  </div>
 </div>
 
 <script type="module">
- // 1. Tomar Firebase Config
- import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
- import { getDatabase, ref, push, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+// 1. Tomar Firebase Config
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, get, child, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
- const firebaseConfig = {
- apiKey: "AIzaSyDaiKUjDOcyK_BfpK76LzzXtpOgsRuQoPc",
+const firebaseConfig = {
+ apiKey: "AIzaSyDaiKUjDOcyK_BfpK76LzzXtp0gsRuQ",
  authDomain: "neuron-foundation.firebaseapp.com",
- databaseURL: "https://neuron-foundation-default-rtdb.asia-southeast1.firebasedatabase.app",
+ databaseURL: "https://neuron-foundation-default-rtdb.firebaseio.com",
  projectId: "neuron-foundation",
- storageBucket: "neuron-foundation.firebasestorage.app",
+ storageBucket: "neuron-foundation.appspot.com",
  messagingSenderId: "451445636516",
- appId: "1:451445636516:web:15004e1af05cced6385531",
+ appId: "1:451445636516:web:15004e1af05cced638",
  measurementId: "G-RBFSKMQ904"
- };
+};
 
- const app = initializeApp(firebaseConfig);
- const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
- // 2. Register Function
- window.register = function(){
+// 2. Register Function
+window.register = function(){
  let name = document.getElementById('name').value;
  let phone = document.getElementById('phone').value;
  let email = document.getElementById('email').value;
  let blood = document.getElementById('blood').value;
  let age = document.getElementById('age').value;
 
- if(!name || !phone){alert("Name + Phone Must"); return;}
- 
+ if(!name || !phone || blood=="Select blood group" || !age){alert("Name, Phone, Blood, Age must fill up"); return;}
+
  push(ref(db, 'members'), {
- name: name, phone: phone, email: email, 
+ name: name, phone: phone, email: email,
  blood: blood, age: age, status: "Pending", date: new Date().toLocaleString()
  });
- alert("Registration Successful! Admin Approval এর পর Login করতে পারবেন।");
+ alert("Registration Successful! Admin Approval er jonno wait korun");
  document.getElementById('regForm').reset();
- }
+}
 
- // 3. Member Login
- window.showLogin = async function(){
- let phoneNum = prompt("Login করতে Phone Number দিন:");
+// 3. Member Login
+window.showLogin = async function(){
+ let phoneNum = prompt("Login korte Phone Number din:");
  if(!phoneNum) return;
  const dbRef = ref(db);
  const snapshot = await get(child(dbRef, `members`));
@@ -131,61 +144,93 @@
  if(found){
  document.getElementById('regForm').style.display = "none";
  document.getElementById('memberPanel').style.display = "block";
- document.getElementById('adminPanel').style.display = "none";
  } else { alert("Approval Pending or Wrong Number"); }
- }
- 
- // 4. Admin Panel
- // JS এর ভিতরে এই 2 টা function add করো
- const ADMIN_PASSWORD = "neuron123"; // <-- এখানে তোমার password দাও
+}
 
- window.showAdmin = function(){
+// 4. Admin Panel
+const ADMIN_PASSWORD = "neuron123"; 
+
+window.showAdmin = function(){
  document.getElementById('regForm').style.display = "none";
  document.getElementById('memberPanel').style.display = "none";
+ document.getElementById('donorListPanel').style.display = "none";
  document.getElementById('adminPanel').style.display = "block";
- document.getElementById('adminContent').style.display = "none"; // লগিন এর আগে লুকানো থাকবে
- }
+ document.getElementById('adminContent').style.display = "none";
+}
 
- window.adminLogin = function(){
+window.adminLogin = function(){
  let pass = document.getElementById('adminPass').value;
  if(pass == ADMIN_PASSWORD){
  document.getElementById('adminContent').style.display = "block";
- loadPending(); // approve list load করবে
+ loadPending();
  } else {
  alert("Wrong Password!");
  }
- }
+}
 
- function loadPending(){
- const pendingList = document.getElementById('pendingList'); // ei line add koro
+function loadPending(){
+ const pendingList = document.getElementById('pendingList');
  onValue(ref(db, 'members'), (snapshot) => {
  pendingList.innerHTML = "";
  snapshot.forEach((childSnap) => {
  if(childSnap.val().status == "Pending"){
  pendingList.innerHTML += `
- <p style="border-bottom:1px solid #ccc; padding:5px;">
- ${childSnap.val().name} - ${childSnap.val().phone} - ${childSnap.val().blood}
- <button class="btn" style="padding:5px 10px; font-size:12px;" onclick="approve('${childSnap.key}')">Approve</button></p>
+ <div class="pending-card">
+ <b>${childSnap.val().name}</b> - ${childSnap.val().phone} - ${childSnap.val().blood}<br>
+ <button class="btn" style="padding:5px 10px; font-size:12px;" onclick="approve('${childSnap.key}')">Approve</button>
+ </div>
  `
  }
  })
  if(pendingList.innerHTML == "") pendingList.innerHTML = "No Pending Members"
  })
- }
- window.showAdmin = function(){
+}
+
+window.approve = function(id){
+ update(ref(db, 'members/' + id), {status: "Approved"});
+ alert("Approved!");
+}
+
+// 5. Donor List
+window.showDonors = function(){
  document.getElementById('regForm').style.display = "none";
  document.getElementById('memberPanel').style.display = "none";
- document.getElementById('adminPanel').style.display = "block";
- }
+ document.getElementById('adminPanel').style.display = "none";
+ document.getElementById('donorListPanel').style.display = "block";
+ loadDonors();
+}
 
- window.logout = function(){
+function loadDonors(){
+ const donorList = document.getElementById('donorList');
+ onValue(ref(db, 'members'), (snapshot) => {
+ donorList.innerHTML = "";
+ snapshot.forEach((childSnap) => {
+ let data = childSnap.val();
+ if(data.status == "Approved"){
+ donorList.innerHTML += `
+ <div class="donor-card">
+ <h4>${data.name} - ${data.blood}</h4>
+ <p><b>Age:</b> ${data.age}</p>
+ <p><b>Phone:</b> <a href="tel:${data.phone}">${data.phone}</a></p>
+ </div>
+ `
+ }
+ })
+ if(donorList.innerHTML == "") donorList.innerHTML = "Ekhono kono Approved Donor nei"
+ })
+}
+
+window.showHome = function(){
  document.getElementById('regForm').style.display = "block";
  document.getElementById('memberPanel').style.display = "none";
  document.getElementById('adminPanel').style.display = "none";
- document.getElementById('donorListPanel').style.display = "none"; // eta add
- document.getElementById('adminContent').style.display = "none"; // eta add
+ document.getElementById('donorListPanel').style.display = "none";
 }
-  
+
+window.logout = function(){
+ showHome();
+}
+
 </script>
 </body>
 </html>
