@@ -16,7 +16,7 @@
  .right{background:white; color:#333; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); flex:1; min-width:300px;}
  input,select,textarea{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;}
  label{font-weight:bold; font-size:14px;}
- #memberPanel, #adminPanel, #donorListPanel, #donorFormPanel{display:none;}
+ #memberPanel, #adminPanel, #donorListPane, #donorFormPane{display:none;}
  h1 span{color:#c70000;}
  .donor-card{border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:5px; background:#fff5f5; text-align:left;}
  .pending-card{border-bottom:1px solid #ccc; padding:10px 0;}
@@ -24,13 +24,13 @@
 </head>
 <body>
 <header>
- <b style="font-size:18px;">Neuron Blood Foundation</b>
+ <b> style="font-size:18px;">Neuron Blood Foundation</b>
  <nav>
  <a href="#" onclick="showHome()">Home</a>
  <a href="#" onclick="showDonorForm()">Become a Donor</a>
  <a href="doner.html">Donor List</a>
- <button> class="btn" onclick="showLogin()">Member Login</button>
- <button> class="btn" onclick="showAdmin()">Admin</button>
+ <button class="btn" onclick="showLogin()">Member Login</button>
+<button class="btn" onclick="showAdmin()">Admin</button>
  </nav>
 </header>
 
@@ -125,7 +125,7 @@
  </div>
 
  <!-- 5. Donor List Panel -->
- <div id="donorListPane">
+ <div id="donorListPanel">
  <h3 style="color:#c70000;">🩸 Donor List </h3>
  <div id="donorList">Loading Donors...</div>
  <button class="btn" onclick="showHome()">Back</button>
