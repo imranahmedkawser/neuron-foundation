@@ -151,18 +151,25 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // 1. Member Register - Admin Approval lagbe
-window.register = function(){
- let name = document.getElementById('name').value;
- let phone = document.getElementById('phone').value;
- let email = document.getElementById('email').value;
- let blood = document.getElementById('blood').value;
- let age = document.getElementById('age').value;
- if(!name || !phone || blood=="Select blood group" || !age){alert("Fill all * fields"); return;}
- push(ref(db, 'members'), {name, phone, email, blood, age, type: "Member", status: "Pending", date: new Date().toLocaleString()});
- alert("Member Registration Successful! Admin Approval er jonno wait korun");
- document.getElementById('regForm').reset();
+window.register = async function(){
+  if(name.value == "" || phone.value == ""){
+    alert("Name and Phone must fill!");
+    return;
+  }
+  
+  await push(ref(db, 'members'), {
+    name: name.value, 
+    phone: phone.value, 
+    status: "Pending", // Eita must
+    date: new Date().toLocaleString()
+  });
+  
+  alert("Registration Successful! Wait for Admin Approval");
+  name.value = ''; 
+  phone.value = '';
+  showHome();
 }
-
+ 
 // 2. DIRECT DONOR REGISTER - Auto Approved, 10 ta field
 window.registerDonor = function(){
  let name = document.getElementById('dName').value;
