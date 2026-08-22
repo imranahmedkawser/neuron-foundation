@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuron Foundation</title>
+<style>
+ body{font-family:Arial; margin:0; background:#f9f9f9;}
+ header{background:#c70000; padding:15px 20px; color:white; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;}
+ nav a{color:white; margin:0 10px; text-decoration:none;}
+ nav button{margin-left:5px;}
+ .btn{background:#c70000; color:white; border:none; padding:10px 20px; cursor:pointer; border-radius:5px; margin-top:10px;}
+ .btn-green{background:green;}
+ .container{padding:40px; max-width:1200px; margin:auto; display:flex; gap:40px; flex-wrap:wrap;}
+ .left{flex:1; min-width:300px;}
+ .right{background:white; color:#333; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); flex:1; min-width:300px;}
+ input,select{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;}
+ #memberPanel, #adminPanel, #donorListPanel, #donorFormPanel{display:none;}
+ h1 span{color:#c70000;}
+ .donor-card{border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:5px; background:#fff5f5;}
+ .pending-card{border-bottom:1px solid #ccc; padding:10px 0;}
+</style>
+</head>
+<body>
+<header>
+ <b style="font-size:18px;">Neuron Blood Foundation</b>
+ <nav>
+ <a href="#" onclick="showHome()">Home</a>
+ <a href="#" onclick="showDonorForm()">Become a Donor</a> <!-- NOTUN -->
+ <a href="#" onclick="showDonors()">Donor List</a>
+ <button class="btn" onclick="showLogin()">Member Login</button>
+ <button class="btn" onclick="showAdmin()">Admin</button>
+ </nav>
+</header>
+
+<div class="container">
+ <div class="left">
+ <h1><span>Neuron</span> Blood Foundation</h1>
+ <p>With youth; on the path of humanity</p>
+ </div>
+
+ <div class="right">
+ <!-- 1. Member Registration Form - Ager tai -->
+ <div id="regForm">
+ <h3 style="color:#c70000;">❤️ Member Registration</h3>
+ <input id="name" placeholder="Full Name *" required>
+ <input id="phone" placeholder="Phone Number *" required>
+ <input id="email" placeholder="Email Address">
+ <select id="blood">
+ <option>Select blood group</option>
+ <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+ <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+ </select>
+ <input id="age" placeholder="Age *" type="number">
+ <button class="btn" style="width:100%" onclick="register()">Register</button>
+ </div>
+
+ <!-- 2. Direct Donor Form - NOTUN -->
+ <div id="donorFormPanel">
+ <h3 style="color:green;">🩸 Become a Blood Donor</h3>
+ <input id="dName" placeholder="Full Name *" required>
+ <input id="dPhone" placeholder="Phone Number *" required>
+ <input id="dEmail" placeholder="Email Address">
+ <select id="dBlood">
+ <option>Select blood group</option>
+ <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+ <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+ </select>
+ <input id="dAge" placeholder="Age *" type="number">
+ <input id="dLocation" placeholder="Location / Area *">
+ <button class="btn btn-green" style="width:100%" onclick="registerDonor()">Register as Donor</button>
+ <button class="btn" onclick="showHome()">Back</button>
+ </div>
+
+ <!-- 3. Member Dashboard -->
+ <div id="memberPanel">
+ <h3>Welcome, <span id="mName"></span></h3>
+ <p><b>Phone:</b> <span id="mPhone"></span></p>
+ <p><b>Blood:</b> <span id="mBlood"></span></p>
+ <h4>My Activities:</h4>
+ <ul><li>Status: <span id="mStatus"></span></li></ul>
+ <button class="btn" onclick="logout()">Logout</button>
+ </div>
+
+ <!-- 4. Admin Panel -->
+ <div id="adminPanel">
+ <h3>Admin Login</h3>
+ <input id="adminPass" placeholder="Admin Password" type="password">
+ <button class="btn" onclick="adminLogin()">Login</button>
+ <div id="adminContent" style="display:none;">
+ <h3>Pending Members:</h3>
+ <div id="pendingList">Loading...</div>
+ <button class="btn" onclick="logout()">Back</button>
+ </div>
+ </div>
+
+ <!-- 5. Donor List Panel -->
+ <div id="donorListPanel">
+ <h3 style="color:#c70000;">🩸 Available Donors</h3>
+ <div id="donorList">Loading Donors...</div>
+ <button class="btn" onclick="showHome()">Back</button>
+ </div>
+
+ </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyDaiKUjDOcyK_BfpK76LzzXtp0gsRuQ",
+ authDomain: "neuron-foundation.firebaseapp.com",
+ databaseURL: "https://neuron-foundation-default-rtdb.firebaseio.com",
+ projectId: "neuron-foundation",
+ storageBucket: "neuron-foundation.appspot.com",
+ messagingSenderId: "451445636516",
+ appId: "1:451445636516:web:15004e1af05cced638"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// 1. Member Register - Admin Approval lagbe
+window.register = function(){
+ let name = document.getElementById('name').value;
+ let phone = document.getElementById('phone').value;
+ let email = document.getElementById('email').value;
+ let blood = document.getElementById('blood').value;
+ let age = document.getElementById('age').value;
+ if(!name || !phone || blood=="Select blood group" || !age){alert("Fill all * fields"); return;}
+ push(ref(db, 'members'), {name, phone, email, blood, age, type: "Member", status: "Pending", date: new Date().toLocaleString()});
+ alert("Member Registration Successful! Admin Approval er jonno wait korun");
+ document.getElementById('regForm').reset();
+}
+
+// 2. DIRECT DONOR REGISTER - Auto Approved
+window.registerDonor = function(){
+ let name = document.getElementById('dName').value;
+ let phone = document.getElementById('dPhone').value;
+ let email = document.getElementById('dEmail').value;
+ let blood = document.getElementById('dBlood').value;
+ let age = document.getElementById('dAge').value;
+ let location = document.getElementById('dLocation').value;
+ if(!name || !phone || blood=="Select blood group" || !age || !location){alert("Fill all * fields"); return;}
+ 
+ push(ref(db, 'members'), {
+ name, phone, email, blood, age, location, 
+ type: "Donor", 
+ status: "Approved", 
+ date: new Date().toLocaleString()
+ });
+ alert("Donor Registration Successful! Apni ekhon Donor List e asen");
+ document.getElementById('dName').value = "";
+ document.getElementById('dPhone').value = "";
+ document.getElementById('dEmail').value = "";
+ document.getElementById('dBlood').value = "Select blood group";
+ document.getElementById('dAge').value = "";
+ document.getElementById('dLocation').value = "";
+ showDonors(); 
+}
+
+// 3. Member Login
+window.showLogin = async function(){
+ let phoneNum = prompt("Login korte Phone Number din:");
+ if(!phoneNum) return;
+ const snapshot = await get(ref(db, `members`));
+ let found = false;
+ snapshot.forEach((childSnap) => {
+ let data = childSnap.val();
+ if(data.phone == phoneNum && data.type == "Member"){
+ found = true;
+ document.getElementById('mName').innerText = data.name;
+ document.getElementById('mPhone').innerText = data.phone;
+ document.getElementById('mBlood').innerText = data.blood;
+ document.getElementById('mStatus').innerText = data.status;
+ }
+ });
+ if(found){
+ hideAll();
+ document.getElementById('memberPanel').style.display = "block";
+ } else { alert("Approval Pending or Wrong Number"); }
+}
+
+// 4. Admin Panel
+const ADMIN_PASSWORD = "neuron123"; 
+window.showAdmin = function(){
+ hideAll();
+ document.getElementById('adminPanel').style.display = "block";
+ document.getElementById('adminContent').style.display = "none";
+}
+window.adminLogin = async function(){
+ if(document.getElementById('adminPass').value == ADMIN_PASSWORD){
+ document.getElementById('adminContent').style.display = "block";
+ loadPending(); 
+ } else { alert("Wrong Password!"); }
+}
+async function loadPending(){
+ const pendingList = document.getElementById('pendingList');
+ pendingList.innerHTML = "Loading...";
+ const snapshot = await get(ref(db, 'members'));
+ pendingList.innerHTML = "";
+ let hasPending = false;
+ snapshot.forEach((childSnap) => {
+ let data = childSnap.val();
+ if(data.status == "Pending" && data.type == "Member"){
+ hasPending = true;
+ pendingList.innerHTML += `<div class="pending-card"><b>${data.name}</b> - ${data.phone}<br><button class="btn" style="padding:5px 10px;" onclick="approve('${childSnap.key}')">Approve</button></div>`
+ }
+ })
+ if(!hasPending) pendingList.innerHTML = "No Pending Members"
+}
+window.approve = async function(id){
+ await update(ref(db, 'members/' + id), {status: "Approved"});
+ alert("Approved!");
+ loadPending(); 
+}
+
+// 5. Donor List
+window.showDonors = function(){
+ hideAll();
+ document.getElementById('donorListPanel').style.display = "block";
+ loadDonors();
+}
+async function loadDonors(){
+ const donorList = document.getElementById('donorList');
+ donorList.innerHTML = "Loading Donors...";
+ const snapshot = await get(ref(db, 'members'));
+ donorList.innerHTML = "";
+ let hasDonor = false;
+ snapshot.forEach((childSnap) => {
+ let data = childSnap.val();
+ if(data.status == "Approved"){
+ hasDonor = true;
+ donorList.innerHTML += `<div class="donor-card"><h4>${data.name} - ${data.blood}</h4><p><b>Age:</b> ${data.age} | <b>Area:</b> ${data.location || 'N/A'}</p><p><b>Phone:</b> <a href="tel:${data.phone}">${data.phone}</a></p></div>`
+ }
+ })
+ if(!hasDonor) donorList.innerHTML = "Ekhono kono Approved Donor nei"
+}
+
+// 6. Navigation
+window.showDonorForm = function(){
+ hideAll();
+ document.getElementById('donorFormPanel').style.display = "block";
+}
+window.showHome = function(){
+ hideAll();
+ document.getElementById('regForm').style.display = "block";
+}
+function hideAll(){
+ document.getElementById('regForm').style.display = "none";
+ document.getElementById('memberPanel').style.display = "none";
+ document.getElementById('adminPanel').style.display = "none";
+ document.getElementById('donorListPanel').style.display = "none";
+ document.getElementById('donorFormPanel').style.display = "none";
+}
+window.logout = function(){ showHome(); }
+</script>
+</body>
+</html>
