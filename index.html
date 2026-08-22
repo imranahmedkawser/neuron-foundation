@@ -14,10 +14,11 @@
  .container{padding:40px; max-width:1200px; margin:auto; display:flex; gap:40px; flex-wrap:wrap;}
  .left{flex:1; min-width:300px;}
  .right{background:white; color:#333; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); flex:1; min-width:300px;}
- input,select{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;}
+ input,select,textarea{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;}
+ label{font-weight:bold; font-size:14px;}
  #memberPanel, #adminPanel, #donorListPanel, #donorFormPanel{display:none;}
  h1 span{color:#c70000;}
- .donor-card{border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:5px; background:#fff5f5;}
+ .donor-card{border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:5px; background:#fff5f5; text-align:left;}
  .pending-card{border-bottom:1px solid #ccc; padding:10px 0;}
 </style>
 </head>
@@ -26,8 +27,8 @@
  <b style="font-size:18px;">Neuron Blood Foundation</b>
  <nav>
  <a href="#" onclick="showHome()">Home</a>
- <a href="#" onclick="showDonorForm()">Become a Donor</a> <!-- NOTUN -->
- <a href="#" onclick="showDonors()">Donor List</a>
+ <a href="#" onclick="showDonorForm()">Become a Donor</a>
+ <a href="#" onclick="showDonors()">Donor List 1</a>
  <button class="btn" onclick="showLogin()">Member Login</button>
  <button class="btn" onclick="showAdmin()">Admin</button>
  </nav>
@@ -40,7 +41,7 @@
  </div>
 
  <div class="right">
- <!-- 1. Member Registration Form - Ager tai -->
+ <!-- 1. Member Registration Form -->
  <div id="regForm">
  <h3 style="color:#c70000;">❤️ Member Registration</h3>
  <input id="name" placeholder="Full Name *" required>
@@ -55,20 +56,49 @@
  <button class="btn" style="width:100%" onclick="register()">Register</button>
  </div>
 
- <!-- 2. Direct Donor Form - NOTUN -->
+ <!-- 2. Become a Donor Form - Tumar 10 ta field -->
  <div id="donorFormPanel">
  <h3 style="color:green;">🩸 Become a Blood Donor</h3>
- <input id="dName" placeholder="Full Name *" required>
- <input id="dPhone" placeholder="Phone Number *" required>
- <input id="dEmail" placeholder="Email Address">
+ 
+ <label>1. *আপনার নাম*</label>
+ <input id="dName" placeholder="আপনার নাম" required>
+ 
+ <label>2. *মোবাইল নাম্বার*</label>
+ <input id="dPhone" placeholder="01XXXXXXXXX" required>
+ 
+ <label>3. *রক্তের গ্রুপ*</label>
  <select id="dBlood">
- <option>Select blood group</option>
+ <option>Select</option>
  <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
  <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
  </select>
- <input id="dAge" placeholder="Age *" type="number">
- <input id="dLocation" placeholder="Location / Area *">
- <button class="btn btn-green" style="width:100%" onclick="registerDonor()">Register as Donor</button>
+ 
+ <label>4. *বয়স*</label>
+ <input id="dAge" placeholder="বয়স" type="number" required>
+ 
+ <label>5. *ওজন*</label>
+ <input id="dWeight" placeholder="kg এ লিখুন" type="number" required>
+ 
+ <label>6. *সর্বশেষ রক্তদানের তারিখ*</label>
+ <input id="dLastDate" type="date">
+ 
+ <label>7. *বিভাগ*</label>
+ <select id="dDivision">
+ <option>Select</option>
+ <option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option>
+ <option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option>
+ </select>
+ 
+ <label>8. *জেলা*</label>
+ <input id="dDistrict" placeholder="জেলা" required>
+ 
+ <label>9. *উপজেলা/থানা*</label>
+ <input id="dUpazila" placeholder="উপজেলা/থানা" required>
+ 
+ <label>10. *সম্পূর্ণ ঠিকানা*</label>
+ <textarea id="dAddress" placeholder="সম্পূর্ণ ঠিকানা" rows="3"></textarea>
+
+ <button class="btn btn-green" style="width:100%" onclick="registerDonor()">Donor হিসেবে নিবন্ধন করুন</button>
  <button class="btn" onclick="showHome()">Back</button>
  </div>
 
@@ -94,9 +124,9 @@
  </div>
  </div>
 
- <!-- 5. Donor List Panel -->
+ <!-- 5. Donor List 1 Panel -->
  <div id="donorListPanel">
- <h3 style="color:#c70000;">🩸 Available Donors</h3>
+ <h3 style="color:#c70000;">🩸 Donor List 1</h3>
  <div id="donorList">Loading Donors...</div>
  <button class="btn" onclick="showHome()">Back</button>
  </div>
@@ -133,29 +163,31 @@ window.register = function(){
  document.getElementById('regForm').reset();
 }
 
-// 2. DIRECT DONOR REGISTER - Auto Approved
+// 2. DIRECT DONOR REGISTER - Auto Approved, 10 ta field
 window.registerDonor = function(){
  let name = document.getElementById('dName').value;
  let phone = document.getElementById('dPhone').value;
- let email = document.getElementById('dEmail').value;
  let blood = document.getElementById('dBlood').value;
  let age = document.getElementById('dAge').value;
- let location = document.getElementById('dLocation').value;
- if(!name || !phone || blood=="Select blood group" || !age || !location){alert("Fill all * fields"); return;}
+ let weight = document.getElementById('dWeight').value;
+ let lastDate = document.getElementById('dLastDate').value;
+ let division = document.getElementById('dDivision').value;
+ let district = document.getElementById('dDistrict').value;
+ let upazila = document.getElementById('dUpazila').value;
+ let address = document.getElementById('dAddress').value;
+
+ if(!name || !phone || blood=="Select" || !age || !weight || division=="Select" || !district || !upazila){
+ alert(" * চিহ্নিত সব ঘর পূরণ করুন"); 
+ return;
+ }
  
- push(ref(db, 'members'), {
- name, phone, email, blood, age, location, 
- type: "Donor", 
+ push(ref(db, 'donors'), { // Ekhon "donors" alada node e save hobe
+ name, phone, blood, age, weight, lastDate, division, district, upazila, address, 
  status: "Approved", 
  date: new Date().toLocaleString()
  });
- alert("Donor Registration Successful! Apni ekhon Donor List e asen");
- document.getElementById('dName').value = "";
- document.getElementById('dPhone').value = "";
- document.getElementById('dEmail').value = "";
- document.getElementById('dBlood').value = "Select blood group";
- document.getElementById('dAge').value = "";
- document.getElementById('dLocation').value = "";
+ alert("Donor Registration Successful! Apni ekhon Donor List 1 e asen");
+ document.getElementById('donorFormPanel').reset();
  showDonors(); 
 }
 
@@ -175,31 +207,23 @@ window.showLogin = async function(){
  document.getElementById('mStatus').innerText = data.status;
  }
  });
- if(found){
- hideAll();
- document.getElementById('memberPanel').style.display = "block";
- } else { alert("Approval Pending or Wrong Number"); }
+ if(found){ hideAll(); document.getElementById('memberPanel').style.display = "block"; } 
+ else { alert("Approval Pending or Wrong Number"); }
 }
 
 // 4. Admin Panel
 const ADMIN_PASSWORD = "neuron123"; 
-window.showAdmin = function(){
- hideAll();
- document.getElementById('adminPanel').style.display = "block";
- document.getElementById('adminContent').style.display = "none";
-}
+window.showAdmin = function(){ hideAll(); document.getElementById('adminPanel').style.display = "block"; document.getElementById('adminContent').style.display = "none"; }
 window.adminLogin = async function(){
  if(document.getElementById('adminPass').value == ADMIN_PASSWORD){
- document.getElementById('adminContent').style.display = "block";
- loadPending(); 
+ document.getElementById('adminContent').style.display = "block"; loadPending(); 
  } else { alert("Wrong Password!"); }
 }
 async function loadPending(){
  const pendingList = document.getElementById('pendingList');
  pendingList.innerHTML = "Loading...";
  const snapshot = await get(ref(db, 'members'));
- pendingList.innerHTML = "";
- let hasPending = false;
+ pendingList.innerHTML = ""; let hasPending = false;
  snapshot.forEach((childSnap) => {
  let data = childSnap.val();
  if(data.status == "Pending" && data.type == "Member"){
@@ -210,42 +234,35 @@ async function loadPending(){
  if(!hasPending) pendingList.innerHTML = "No Pending Members"
 }
 window.approve = async function(id){
- await update(ref(db, 'members/' + id), {status: "Approved"});
- alert("Approved!");
- loadPending(); 
+ await update(ref(db, 'members/' + id), {status: "Approved"}); alert("Approved!"); loadPending(); 
 }
 
-// 5. Donor List
-window.showDonors = function(){
- hideAll();
- document.getElementById('donorListPanel').style.display = "block";
- loadDonors();
-}
+// 5. Donor List 1 - "donors" node theke load hobe
+window.showDonors = function(){ hideAll(); document.getElementById('donorListPanel').style.display = "block"; loadDonors(); }
 async function loadDonors(){
  const donorList = document.getElementById('donorList');
  donorList.innerHTML = "Loading Donors...";
- const snapshot = await get(ref(db, 'members'));
- donorList.innerHTML = "";
- let hasDonor = false;
+ const snapshot = await get(ref(db, 'donors')); // "donors" theke nicche
+ donorList.innerHTML = ""; let hasDonor = false;
  snapshot.forEach((childSnap) => {
- let data = childSnap.val();
- if(data.status == "Approved"){
+ let d = childSnap.val();
  hasDonor = true;
- donorList.innerHTML += `<div class="donor-card"><h4>${data.name} - ${data.blood}</h4><p><b>Age:</b> ${data.age} | <b>Area:</b> ${data.location || 'N/A'}</p><p><b>Phone:</b> <a href="tel:${data.phone}">${data.phone}</a></p></div>`
- }
+ donorList.innerHTML += `
+ <div class="donor-card">
+ <h4>${d.name} - ${d.blood}</h4>
+ <p><b>Phone:</b> <a href="tel:${d.phone}">${d.phone}</a></p>
+ <p><b>Age:</b> ${d.age} | <b>Weight:</b> ${d.weight}kg</p>
+ <p><b>Last Donate:</b> ${d.lastDate || 'N/A'}</p>
+ <p><b>Location:</b> ${d.upazila}, ${d.district}, ${d.division}</p>
+ <p><b>Address:</b> ${d.address}</p>
+ </div>`
  })
- if(!hasDonor) donorList.innerHTML = "Ekhono kono Approved Donor nei"
+ if(!hasDonor) donorList.innerHTML = "Ekhono kono Donor nei"
 }
 
 // 6. Navigation
-window.showDonorForm = function(){
- hideAll();
- document.getElementById('donorFormPanel').style.display = "block";
-}
-window.showHome = function(){
- hideAll();
- document.getElementById('regForm').style.display = "block";
-}
+window.showDonorForm = function(){ hideAll(); document.getElementById('donorFormPanel').style.display = "block"; }
+window.showHome = function(){ hideAll(); document.getElementById('regForm').style.display = "block"; }
 function hideAll(){
  document.getElementById('regForm').style.display = "none";
  document.getElementById('memberPanel').style.display = "none";
