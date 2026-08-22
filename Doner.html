@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron Blood Foundation - Donor List</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+        body { background: #28a745; padding: 10px; }
+        .header { background: #white; color: 28a745; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; }
+        .header h1 { font-size: 22px; }
+        
+        .search-area { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-box { flex: 1; padding: 12px; border: 2px solid #dc3545; border-radius: 8px; font-size: 16px; }
+        
+        table { width: 100%; background: white; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th { background: #dc3545; color: white; padding: 12px 8px; text-align: left; font-size: 14px; }
+        td { padding: 12px 8px; border-bottom: 1px solid #ddd; font-size: 14px; }
+        tr:hover { background: #f1f1f1; }
+        
+        .blood-group { background: #dc3545; color: white; padding: 3px 8px; border-radius: 5px; font-weight: bold; }
+        .status-green { color: #155724; font-weight: bold; }
+        .status-red { color: #dc3545; font-weight: bold; }
+        .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .green-dot { background-color: #28a745; }
+        .red-dot { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Neuron Blood Foundation 🩸</h1>
+        <p>রক্তদাতার তালিকা</p>
+    </div>
+
+    <div class="search-area">
+        <input type="text" id="bloodSearch" class="search-box" placeholder="1. Blood Group লিখুন: A+ B+ O+">
+        <input type="text" id="locationSearch" class="search-box" placeholder="2. থানা লিখুন: সাভার ধামরাই">
+    </div>
+<table id="donorTable">
+        <thead>
+            <tr>
+                <th>নাম</th>
+                <th>রক্তের গ্রুপ</th>
+                <th>বয়স</th>
+                <th>ওজন</th>
+                <th>ঠিকানা</th>
+                <th>সর্বশেষ Donate</th>
+                <th>Status</th>
+                <th>মোবাইল</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- DONOR 1 -->
+<tr data-group="A+" data-location="সাভার">
+    <td>মেহেদী হাসান</td>
+    <td><span class="blood-group">A+</span></td>
+    <td>19</td>
+    <td>70 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-03-01">01-03-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01963-218506" style="color:#007bff; font-weight:bold;">01963-218506</a></td>
+</tr>
+<!-- DONOR 2 -->
+<tr data-group="A+" data-location="সাভার">
+    <td>তালহা বিন মালেক</td>
+    <td><span class="blood-group">A+</span></td>
+    <td>21</td>
+    <td>60 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2025-01-01"></td>
+    <td class="status"></td>
+    <td><a href="tel:01518-360773" style="color:#007bff; font-weight:bold;">01518-360773</a></td>
+</tr>
+            <!-- DONOR 3 -->
+<tr data-group="A+" data-location="ঢাকা">
+    <td>মো. মাহফুজ আলম</td>
+    <td><span class="blood-group">A+</span></td>
+    <td>21</td>
+    <td>67 kg</td>
+    <td>খিলক্ষেত, ঢাকা</td>
+    <td class="last-date" data-date="2025-12-01">01-12-2025</td>
+    <td class="status"></td>
+    <td><a href="tel:01907-762230" style="color:#007bff; font-weight:bold;">01907-762230</a></td>
+</tr>
+            <!-- DONOR 4 -->
+<tr data-group="A+" data-location="ঢাকা">
+    <td>তাসফিকুল ইসলাম তামিম</td>
+    <td><span class="blood-group">A+</span></td>
+    <td>21</td>
+    <td>55 kg</td>
+    <td>জামগড়া, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-04-30">30-04-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01859-565575" style="color:#007bff; font-weight:bold;">01859-565575</a></td>
+</tr>
+            <!-- DONOR 5 -->
+<tr data-group="A+" data-location="ঢাকা">
+    <td>তারেক ইসলাম শান্ত</td>
+    <td><span class="blood-group">A+</span></td>
+    <td>19</td>
+    <td>50 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2025-01-01"></td>
+    <td class="status"></td>
+    <td><a href="tel:01631-436487" style="color:#007bff; font-weight:bold;">01631-436487</a></td>
+</tr>
+            <!-- DONOR 6 -->
+<tr data-group="B+" data-location="ঢাকা">
+    <td>নাহিদ দালি</td>
+    <td><span class="blood-group">B+</span></td>
+    <td>18</td>
+    <td></td>
+    <td>জামগোড়া, আশুলিয়া, ঢাকা</td>
+    <td class="last-date" data-date=""></td>
+    <td class="status"></td>
+    <td><a href="tel:01874757724" style="color:#007bff; font-weight:bold;">01874-757724</a></td>
+</tr>
+          <!-- DONOR 7 -->
+<tr data-group="B+" data-location="ঢাকা">
+    <td>আল আমিন হাসান</td>
+    <td><span class="blood-group">B+</span></td>
+    <td>19</td>
+    <td>75 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-04-01">01-04-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01707-340509" style="color:#007bff; font-weight:bold;">01707-340509</a></td>
+</tr>
+            <!-- DONOR 8 -->
+<tr data-group="B+" data-location="ঢাকা">
+    <td>নূরজামান ইসলাম রনি</td>
+    <td><span class="blood-group">B+</span></td>
+    <td>22</td>
+    <td>58 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-03-01">01-03-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01786-179469" style="color:#007bff; font-weight:bold;">01786-179469</a></td>
+</tr>
+            <!-- DONOR 9 -->
+<tr data-group="B+" data-location="ঢাকা">
+    <td>মারুফ খান শান্ত</td>
+    <td><span class="blood-group">B+</span></td>
+    <td>18</td>
+    <td>63 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-04-04">04-04-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01406-484642" style="color:#007bff; font-weight:bold;">01406-484642</a></td>
+</tr>
+            <!-- DONOR 10 -->
+<tr data-group="B+" data-location="ঢাকা">
+    <td>মুরাদ হাসান মুন্না</td>
+    <td><span class="blood-group">B+</span></td>
+    <td>21</td>
+    <td>65 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-04-04">04-04-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01722-136816" style="color:#007bff; font-weight:bold;">01722-136816</a></td>
+</tr>
+
+           <!-- DONOR 11 -->
+<tr data-group="B+" data-location="ঢাকা">
+    <td>সামাদ</td>
+    <td><span class="blood-group">B+</span></td>
+    <td>19</td>
+    <td>58 kg</td>
+    <td>ঠিকানা নাই</td>
+    <td class="last-date" data-date="2026-03-12">12-03-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01837-515666" style="color:#007bff; font-weight:bold;">01837-515666</a></td>
+</tr>
+
+          <!-- DONOR 12 -->
+<tr data-group="B+" data-location="ঢাকা">
+    <td>আসিফ হোসাইন</td>
+    <td><span class="blood-group">B+</span></td>
+    <td>20</td>
+    <td>51 kg</td>
+    <td>জিরানি, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2025-01-01"></td>
+    <td class="status"></td>
+    <td><a href="tel:01601-605676" style="color:#007bff; font-weight:bold;">01601-605676</a></td>
+</tr>
+            <!-- DONOR 13 -->
+<tr data-group="AB+" data-location="ঢাকা">
+    <td>নাফিজ হাওলাদার</td>
+    <td><span class="blood-group">AB+</span></td>
+    <td>19</td>
+    <td>56 kg</td>
+    <td>জিরানি, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-02-18">18-02-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01988-549163" style="color:#007bff; font-weight:bold;">01988-549163</a></td>
+</tr>
+            <!-- DONOR 14 -->
+<tr data-group="AB+" data-location="ঢাকা">
+    <td>ফারহান নিলয়</td>
+    <td><span class="blood-group">AB+</span></td>
+    <td>19</td>
+    <td>56 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2025-01-01"></td>
+    <td class="status"></td>
+    <td><a href="tel:01879-309147" style="color:#007bff; font-weight:bold;">01879-309147</a></td>
+</tr>
+            <!-- DONOR 15 -->
+<tr data-group="O+" data-location="ঢাকা">
+    <td>মো. শামসুজ্জোহা শুভ</td>
+    <td><span class="blood-group">O+</span></td>
+    <td>17</td>
+    <td>63 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-08-19"></td>
+    <td class="status"></td>
+    <td><a href="tel:01861-071755" style="color:#007bff; font-weight:bold;">01861-071755</a></td>
+</tr>
+            <!-- DONOR 16 -->
+<tr data-group="O+" data-location="ঢাকা">
+    <td>মো. পারভেজ হোসেন</td>
+    <td><span class="blood-group">O+</span></td>
+    <td>20</td>
+    <td>51 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-03-01"></td>
+    <td class="status"></td>
+    <td><a href="tel:01601-815265" style="color:#007bff; font-weight:bold;">01601-815265</a></td>
+</tr>
+            <!-- DONOR 17 -->
+<tr data-group="O+" data-location="ঢাকা">
+    <td>মো. মোস্তাফিজুর রহমান</td>
+    <td><span class="blood-group">O+</span></td>
+    <td>19</td>
+    <td>77 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-03-01"></td>
+    <td class="status"></td>
+    <td><a href="tel:01947-075810" style="color:#007bff; font-weight:bold;">01947-075810</a></td>
+</tr>
+            <!-- DONOR 18 -->
+<tr data-group="O+" data-location="ঢাকা">
+    <td>মো. জাহিদ</td>
+    <td><span class="blood-group">O+</span></td>
+    <td>22</td>
+    <td>52 kg</td>
+    <td>আশুলিয়া, ঢাকা</td>
+    <td class="last-date" data-date="2026-03-01"></td>
+    <td class="status"></td>
+    <td><a href="tel:01936-785662" style="color:#007bff; font-weight:bold;">01936-785662</a></td>
+</tr>
+            <!-- DONOR 19 -->
+<tr data-group="O+" data-location="ঢাকা">
+    <td>ফাইজুল ইসলাম শামীম</td>
+    <td><span class="blood-group">O+</span></td>
+    <td>20</td>
+    <td>57 kg</td>
+    <td>বাইপাইল, সাভার, ঢাকা</td>
+    <td class="last-date" data-date="2026-03-12">12-03-2026</td>
+    <td class="status"></td>
+    <td><a href="tel:01701-854860" style="color:#007bff; font-weight:bold;">01701-854860</a></td>
+</tr>
+        </tbody>
+    </table>
+
+<script>
+// 1. Auto Status: 120 দিন = 4 মাস
+function updateStatus() {
+    const today = new Date();
+    document.querySelectorAll('#donorTable tbody tr').forEach(row => {
+        const dateCell = row.querySelector('.last-date');
+        const statusCell = row.querySelector('.status');
+        const lastDate = new Date(dateCell.dataset.date);
+        const diffDays = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+        
+        if(diffDays >= 120) {
+            statusCell.innerHTML = '<span class="dot green-dot"></span><span class="status-green">Donate করতে পারবে</span>';
+        } else {
+            statusCell.innerHTML = '<span class="dot red-dot"></span><span class="status-red">Donate করা যাবে না</span>';
+        }
+    });
+}
+updateStatus();
+
+// 2. Search: Blood Group must, Location optional
+function filterTable() {
+    let bloodFilter = document.getElementById('bloodSearch').value.toLowerCase();
+    let locationFilter = document.getElementById('locationSearch').value.toLowerCase();
+    let rows = document.querySelectorAll('#donorTable tbody tr');
+    
+    rows.forEach(row => {
+        let group = row.dataset.group.toLowerCase();
+        let location = row.dataset.location.toLowerCase();
+        
+        let bloodMatch = group.includes(bloodFilter);
+        let locationMatch = locationFilter === "" || location.includes(locationFilter);
+        
+        if(bloodMatch && locationMatch) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+document.getElementById('bloodSearch').addEventListener('keyup', filterTable);
+document.getElementById('locationSearch').addEventListener('keyup', filterTable);
+</script>
+</body>
+</html>
