@@ -176,35 +176,15 @@
  document.getElementById('regForm').style.display = "none";
  document.getElementById('memberPanel').style.display = "none";
  document.getElementById('adminPanel').style.display = "block";
- 
- onValue(ref(db, 'members'), (snapshot) => {
- pendingList.innerHTML = "";
- snapshot.forEach((childSnap) => {
- if(childSnap.val().status == "Pending"){
- pendingList.innerHTML += `
- <p style="border-bottom:1px solid #ccc; padding:5px;">
- ${childSnap.val().name} - ${childSnap.val().phone} - ${childSnap.val().blood}
- <button class="btn" style="padding:5px 10px; font-size:12px;" onclick="approve('${childSnap.key}')">Approve</button></p>
- `
- }
- })
- if(pendingList.innerHTML == "") pendingList.innerHTML = "No Pending Members"
- })
- }
-
- window.approve = function(id){
- update(ref(db, 'members/' + id), {status: "Approved"});
- alert("Approved!");
  }
 
  window.logout = function(){
  document.getElementById('regForm').style.display = "block";
  document.getElementById('memberPanel').style.display = "none";
  document.getElementById('adminPanel').style.display = "none";
- }
-
- Ei js code dewar por ki ami onno page er link diye onno doner list add korte parbo...?
-
+ document.getElementById('donorListPanel').style.display = "none"; // eta add
+ document.getElementById('adminContent').style.display = "none"; // eta add
+}
   
 </script>
 </body>
