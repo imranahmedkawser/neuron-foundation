@@ -211,30 +211,47 @@ window.showLogin = async function(){
  else { alert("Approval Pending or Wrong Number"); }
 }
 
-// 4. Admin Panel
+// 4. Admin Panel 
 const ADMIN_PASSWORD = "neuron123"; 
-window.showAdmin = function(){ hideAll(); document.getElementById('adminPanel').style.display = "block"; document.getElementById('adminContent').style.display = "none"; }
-window.adminLogin = async function(){
- if(document.getElementById('adminPass').value == ADMIN_PASSWORD){
- document.getElementById('adminContent').style.display = "block"; loadPending(); 
- } else { alert("Wrong Password!"); }
-}
-async function loadPending(){
- const pendingList = document.getElementById('pendingList');
- pendingList.innerHTML = "Loading...";
- const snapshot = await get(ref(db, 'members'));
- pendingList.innerHTML = ""; let hasPending = false;
- snapshot.forEach((childSnap) => {
- let data = childSnap.val();
- if(data.status == "Pending" && data.type == "Member"){
- hasPending = true;
- pendingList.innerHTML += `<div class="pending-card"><b>${data.name}</b> - ${data.phone}<br><button class="btn" style="padding:5px 10px;" onclick="approve('${childSnap.key}')">Approve</button></div>`
- }
- })
- if(!hasPending) pendingList.innerHTML = "No Pending Members"
-}
-window.approve = async function(id){
- await update(ref(db, 'members/' + id), {status: "Approved"}); alert("Approved!"); loadPending(); 
+
+window.showAdmin = function(){ 
+  hideAll(); 
+  document.getElementById('adminPanel').style.display = "block"; 
+  document.getElementById('adminContent').style.display = "none"; // login box dekhabe
+  document.getElementById('adminPass').value = ""; // password field clear
+} 
+
+window.adminLogin = async function(){ 
+  if(document.getElementById('adminPass').value == ADMIN_PASSWORD){ 
+    document.getElementById('adminContent').style.display = "block"; 
+    loadPending(); 
+  } else { 
+    alert("Wrong Password!"); 
+  } 
+} 
+
+async function loadPending(){ 
+  const pendingList = document.getElementById('pendingList'); 
+  pendingList.innerHTML = "Loading..."; 
+  const snapshot = await get(ref(db, 'members')); 
+  pendingList.innerHTML = ""; 
+  let hasPending = false; 
+  
+  snapshot.forEach((childSnap) => { 
+    let data = childSnap.val(); 
+    if(data.status == "Pending"){ // type check baad dilam, sob pending dekhabe
+      hasPending = true; 
+      pendingList.innerHTML += `<div class="pending-card" style="border:1px solid #ccc; padding:10px; margin:5px 0; border-radius:5px;"><b>${data.name}</b> - ${data.phone}<br><button class="btn" style="padding:5px 10px;" onclick="approve('${childSnap.key}')">Approve</button></div>` 
+    } 
+  }) 
+  
+  if(!hasPending) pendingList.innerHTML = "No Pending Members" 
+} 
+
+window.approve = async function(id){ 
+  await update(ref(db, 'members/' + id), {status: "Approved"}); 
+  alert("Approved!"); 
+  loadPending(); 
 }
 
 // 5. Donor List 1 - "donors" node theke load hobe
